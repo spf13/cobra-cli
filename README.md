@@ -3,17 +3,17 @@
 Cobra provides its own program that will create your application and add any
 commands you want. It's the easiest way to incorporate Cobra into your application.
 
-Install the cobra generator with the command `go install github.com/spf13/cobra/cobra`. 
+Install the cobra generator with the command `go install github.com/spf13/cobra-cli@latest`. 
 Go will automatically install it in your `$GOPATH/bin` directory which should be in your $PATH. 
 
-Once installed you should have the `cobra` command available. Confirm by typing `cobra` at a 
+Once installed you should have the `cobra-cli` command available. Confirm by typing `cobra-cli` at a 
 command line. 
 
 There are only two operations currently supported by the Cobra generator: 
 
-### cobra init
+### cobra-cli init
 
-The `cobra init [app]` command will create your initial application code
+The `cobra-cli init [app]` command will create your initial application code
 for you. It is a very powerful application that will populate your program with
 the right structure so you can immediately enjoy all the benefits of Cobra. 
 It can also apply the license you specify to your application.
@@ -41,7 +41,7 @@ go mod init github.com/spf13/myapp
 
 #### Initalizing an Cobra CLI application
 
-From within a Go module run `cobra init`. This will create a new barebones project
+From within a Go module run `cobra-cli init`. This will create a new barebones project
 for you to edit. 
 
 You should be able to run your new application immediately. Try it with 
@@ -61,10 +61,10 @@ This is useful if you want to keep your application code separate from your libr
 
 #### Optional flags:
 You can provide it your author name with the `--author` flag. 
-e.g. `cobra init --author "Steve Francia spf@spf13.com"`
+e.g. `cobra-cli init --author "Steve Francia spf@spf13.com"`
 
 You can provide a license to use with `--license` 
-e.g. `cobra init --license apache`
+e.g. `cobra-cli init --license apache`
 
 Use the `--viper` flag to automatically setup [viper](https://github.com/spf13/viper)
 
@@ -73,7 +73,7 @@ Viper is a companion to Cobra intended to provide easy handling of environment v
 ### Add commands to a project
 
 Once a cobra application is initialized you can continue to use the Cobra generator to 
-add additional commands to your application. The command to do this is `cobra add`. 
+add additional commands to your application. The command to do this is `cobra-cli add`. 
 
 Let's say you created an app and you wanted the following commands for it:
 
@@ -84,22 +84,22 @@ Let's say you created an app and you wanted the following commands for it:
 In your project directory (where your main.go file is) you would run the following:
 
 ```
-cobra add serve
-cobra add config
-cobra add create -p 'configCmd'
+cobra-cli add serve
+cobra-cli add config
+cobra-cli add create -p 'configCmd'
 ```
 
-`cobra add` supports all the same optional flags as `cobra init` does (described above).
+`cobra-cli add` supports all the same optional flags as `cobra-cli init` does (described above).
 
 You'll notice that this final command has a `-p` flag. This is used to assign a
 parent command to the newly added command. In this case, we want to assign the
 "create" command to the "config" command. All commands have a default parent of rootCmd if not specified.  
 
-By default `cobra` will append `Cmd` to the name provided and uses this name for the internal variable name. When specifying a parent, be sure to match the variable name used in the code. 
+By default `cobra-cli` will append `Cmd` to the name provided and uses this name for the internal variable name. When specifying a parent, be sure to match the variable name used in the code. 
 
 *Note: Use camelCase (not snake_case/kebab-case) for command names.
 Otherwise, you will encounter errors.
-For example, `cobra add add-user` is incorrect, but `cobra add addUser` is valid.*
+For example, `cobra-cli add add-user` is incorrect, but `cobra-cli add addUser` is valid.*
 
 Once you have run these three commands you would have an app structure similar to
 the following:
