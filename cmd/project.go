@@ -6,7 +6,7 @@ import (
 	"text/template"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/cobra/cobra/tpl"
+	"github.com/spf13/cobra-cli/tpl"
 )
 
 // Project contains name, license and paths to projects.

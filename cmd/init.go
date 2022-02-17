@@ -98,7 +98,7 @@ func parseModInfo() (Mod, CurDir) {
 
 	// Unsure why, but if no module is present Path is set to this string.
 	if mod.Path == "command-line-arguments" {
-		cobra.CheckErr("Please run `go mod init <MODNAME>` before `cobra init`")
+		cobra.CheckErr("Please run `go mod init <MODNAME>` before `cobra-cli init`")
 	}
 
 	e := modInfoJSON("-e")
