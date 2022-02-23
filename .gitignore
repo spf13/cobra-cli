@@ -36,4 +36,5 @@ cobra.test
 bin
 
 .idea/
+.vscode/
 *.iml
