@@ -52,11 +52,11 @@ You will want to open up and edit 'cmd/root.go' and provide your own description
 e.g.
 ```
 cd $HOME/code/myapp
-cobra init
+cobra-cli init
 go run main.go
 ```
 
-Cobra init can also be run from a subdirectory such as how the [cobra generator itself is organized](https://github.com/spf13/cobra).
+cobra-cli init can also be run from a subdirectory such as how the [cobra generator itself is organized](https://github.com/spf13/cobra).
 This is useful if you want to keep your application code separate from your library code.
 
 #### Optional flags:
