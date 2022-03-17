@@ -128,9 +128,11 @@ Have fun!
 
 The Cobra generator will be easier to use if you provide a simple configuration
 file which will help you eliminate providing a bunch of repeated information in
-flags over and over.
+flags over and over.  If not specified through the `--config` flag, the configuration
+file should be placed at `$HOME/.cobra-cli.yaml` (for backwards-compatibility, 
+`$HOME/.cobra.yaml` will also be accepted).
 
-An example ~/.cobra.yaml file:
+An example ~/.cobra-cli.yaml file:
 
 ```yaml
 author: Steve Francia <spf@spf13.com>
