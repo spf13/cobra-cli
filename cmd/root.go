@@ -14,6 +14,7 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
@@ -73,7 +74,16 @@ func initConfig() {
 
 	viper.AutomaticEnv()
 
-	if err := viper.ReadInConfig(); err == nil {
+	err := viper.ReadInConfig()
+
+	notFound := &viper.ConfigFileNotFoundError{}
+	switch {
+	case err != nil && !errors.As(err, notFound):
+		cobra.CheckErr(err)
+	case err != nil && errors.As(err, notFound):
+		// The config file is optional, we shouldn't exit when the config is not found
+		break
+	default:
 		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
 	}
 }
