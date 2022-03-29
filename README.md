@@ -39,7 +39,7 @@ cd myapp
 go mod init github.com/spf13/myapp
 ```
 
-#### Initalizing an Cobra CLI application
+#### Initalizing a Cobra CLI application
 
 From within a Go module run `cobra-cli init`. This will create a new barebones project
 for you to edit. 
