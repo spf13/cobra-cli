@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strings"
 	"text/template"
 
 	"github.com/spf13/cobra"
@@ -89,7 +90,11 @@ func (c *Command) Create() error {
 	}
 	defer cmdFile.Close()
 
-	commandTemplate := template.Must(template.New("sub").Parse(string(tpl.AddCommandTemplate())))
+	commandTemplate := template.Must(
+		template.New("sub").Funcs(template.FuncMap{
+			"title": strings.Title,
+		}).Parse(string(tpl.AddCommandTemplate())),
+	)
 	err = commandTemplate.Execute(cmdFile, c)
 	if err != nil {
 		return err

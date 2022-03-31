@@ -46,23 +46,13 @@ import (
 )
 
 {{ if .Viper -}}
-var cfgFile string
+var (
+	cfgFile string
+	rootCmd = NewRootCmd()
+)
+{{- else -}}
+var rootCmd = NewRootCmd()
 {{- end }}
-
-// rootCmd represents the base command when called without any subcommands
-var rootCmd = &cobra.Command{
-	Use:   "{{ .AppName }}",
-	Short: "A brief description of your application",
-	Long: ` + "`" + `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.` + "`" + `,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
-}
 
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
@@ -73,22 +63,11 @@ func Execute() {
 	}
 }
 
+{{ if .Viper -}}
 func init() {
-{{- if .Viper }}
 	cobra.OnInitialize(initConfig)
-{{ end }}
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
-{{ if .Viper }}
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.{{ .AppName }}.yaml)")
-{{ else }}
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.{{ .AppName }}.yaml)")
-{{ end }}
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
+{{- end }}
 
 {{ if .Viper -}}
 // initConfig reads in config file and ENV variables if set.
@@ -115,6 +94,38 @@ func initConfig() {
 	}
 }
 {{- end }}
+
+// NewRootCmd returns a new command which
+// represents the base command when called without any subcommands
+func NewRootCmd() *cobra.Command {
+	var rootCmd = &cobra.Command{
+		Use:   "{{ .AppName }}",
+		Short: "A brief description of your application",
+		Long: ` + "`" + `A longer description that spans multiple lines and likely contains
+	examples and usage of using your application. For example:
+	
+	Cobra is a CLI library for Go that empowers applications.
+	This application is a tool to generate the needed files
+	to quickly create a Cobra application.` + "`" + `,
+		// Uncomment the following line if your bare application
+		// has an action associated with it:
+		// Run: func(cmd *cobra.Command, args []string) { },
+	}
+
+	// Here you will define your flags and configuration settings.
+	// Cobra supports persistent flags, which, if defined here,
+	// will be global for your application.
+{{ if .Viper }}
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.{{ .AppName }}.yaml)")
+{{ else }}
+	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.{{ .AppName }}.yaml)")
+{{ end }}
+	// Cobra also supports local flags, which will only run
+	// when this action is called directly.
+	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+
+	return rootCmd
+}
 `)
 }
 
@@ -131,23 +142,27 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// {{ .CmdName }}Cmd represents the {{ .CmdName }} command
-var {{ .CmdName }}Cmd = &cobra.Command{
-	Use:   "{{ .CmdName }}",
-	Short: "A brief description of your command",
-	Long: ` + "`" + `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.` + "`" + `,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("{{ .CmdName }} called")
-	},
-}
+var {{ .CmdName }}Cmd = New{{ .CmdName | title }}Cmd()
 
 func init() {
-	{{ .CmdParent }}.AddCommand({{ .CmdName }}Cmd)
+	{{ .CmdParent }}Cmd.AddCommand({{ .CmdName }}Cmd)
+}
+
+// New{{ .CmdName | title }}Cmd creates a new {{ .CmdName }} command
+func New{{ .CmdName | title }}Cmd() *cobra.Command {
+	var {{ .CmdName }}Cmd = &cobra.Command{
+		Use:   "{{ .CmdName }}",
+		Short: "A brief description of your command",
+		Long: ` + "`" + `A longer description that spans multiple lines and likely contains examples
+	and usage of using your command. For example:
+	
+	Cobra is a CLI library for Go that empowers applications.
+	This application is a tool to generate the needed files
+	to quickly create a Cobra application.` + "`" + `,
+		Run: func(cmd *cobra.Command, args []string) {
+			fmt.Println("{{ .CmdName }} called")
+		},
+	}
 
 	// Here you will define your flags and configuration settings.
 
@@ -158,6 +173,8 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// {{ .CmdName }}Cmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+
+	return {{ .CmdName }}Cmd
 }
 `)
 }
