@@ -36,7 +36,21 @@ and the appropriate structure for a Cobra-based CLI application.
 
 Cobra init must be run inside of a go module (please run "go mod init <MODNAME>" first)
 `,
-
+		ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			var comps []string
+			var directive cobra.ShellCompDirective
+			if len(args) == 0 {
+				comps = cobra.AppendActiveHelp(comps, "Optionally specify the path of the go module to initialize")
+				directive = cobra.ShellCompDirectiveDefault
+			} else if len(args) == 1 {
+				comps = cobra.AppendActiveHelp(comps, "This command does not take any more arguments (but may accept flags)")
+				directive = cobra.ShellCompDirectiveNoFileComp
+			} else {
+				comps = cobra.AppendActiveHelp(comps, "ERROR: Too many arguments specified")
+				directive = cobra.ShellCompDirectiveNoFileComp
+			}
+			return comps, directive
+		},
 		Run: func(_ *cobra.Command, args []string) {
 			projectPath, err := initializeProject(args)
 			cobra.CheckErr(err)
