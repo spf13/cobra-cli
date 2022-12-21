@@ -54,8 +54,6 @@ func init() {
 
 // getLicense returns license specified by user in flag or in config.
 // If user didn't specify the license, it returns none
-//
-// TODO: Inspect project for existing license
 func getLicense() License {
 	// If explicitly flagged, use that.
 	if userLicense != "" {

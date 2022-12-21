@@ -27,7 +27,8 @@ import (
 )
 
 var (
-	initCmd = &cobra.Command{
+	skipLicense = false
+	initCmd     = &cobra.Command{
 		Use:     "init [path]",
 		Aliases: []string{"initialize", "initialise", "create"},
 		Short:   "Initialize a Cobra Application",
@@ -70,6 +71,7 @@ func initializeProject(args []string) (string, error) {
 		Copyright:    copyrightLine(),
 		Viper:        viper.GetBool("useViper"),
 		AppName:      path.Base(modName),
+		SkipLicence:  skipLicense,
 	}
 
 	if err := project.Create(); err != nil {
@@ -105,6 +107,10 @@ func parseModInfo() (Mod, CurDir) {
 	cobra.CheckErr(json.Unmarshal(e, &dir))
 
 	return mod, dir
+}
+
+func init() {
+	initCmd.Flags().BoolVarP(&skipLicense, "skipLicense", "s", false, "skip license creation")
 }
 
 type Mod struct {
