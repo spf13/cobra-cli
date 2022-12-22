@@ -3,7 +3,9 @@ XC_ARCH="amd64"
 XC_PARALLEL="2"
 BIN="bin"
 SRC=$(shell find . -name "*.go")
-
+GIT_SHA?=$(shell git rev-parse HEAD)
+VERSION?=$(shell git describe --always --tags | cut -d "v" -f 2)
+LINKER_FLAGS="-s -w -X github.com/spf13/cobra-cli/cmd.Version=${VERSION} -X github.com/spf13/cobra-cli/cmd.GitCommit=${GIT_SHA}"
 ifeq (, $(shell which golangci-lint))
 $(warning "could not find golangci-lint in $(PATH), run: curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh")
 endif
@@ -27,6 +29,7 @@ build: install_deps
 		-os=$(XC_OS) \
 		-arch=$(XC_ARCH) \
 		-parallel=$(XC_PARALLEL) \
+		-ldflags=$(LINKER_FLAGS) \
 		-output=$(BIN)/{{.Dir}}_{{.OS}}_{{.Arch}} \
 		;
 
