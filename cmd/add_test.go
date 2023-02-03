@@ -18,8 +18,8 @@ func TestGoldenAddCmd(t *testing.T) {
 	}
 	defer os.RemoveAll(command.AbsolutePath)
 
-	assertNoErr(t, command.Project.Create())
-	assertNoErr(t, command.Create())
+	assertNoErr(t, command.Project.Create(false))
+	assertNoErr(t, command.Create(false))
 
 	generatedFile := fmt.Sprintf("%s/cmd/%s.go", command.AbsolutePath, command.CmdName)
 	goldenFile := fmt.Sprintf("testdata/%s.go.golden", command.CmdName)

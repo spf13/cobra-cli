@@ -37,8 +37,10 @@ and the appropriate structure for a Cobra-based CLI application.
 Cobra init must be run inside of a go module (please run "go mod init <MODNAME>" first)
 `,
 
-		Run: func(_ *cobra.Command, args []string) {
-			projectPath, err := initializeProject(args)
+		Run: func(cmd *cobra.Command, args []string) {
+			force, err := cmd.Flags().GetBool("force")
+			cobra.CheckErr(err)
+			projectPath, err := initializeProject(force, args)
 			cobra.CheckErr(err)
 			cobra.CheckErr(goGet("github.com/spf13/cobra"))
 			if viper.GetBool("useViper") {
@@ -49,7 +51,11 @@ Cobra init must be run inside of a go module (please run "go mod init <MODNAME>"
 	}
 )
 
-func initializeProject(args []string) (string, error) {
+func init() {
+	initCmd.Flags().BoolP("force", "f", false, "overwrite files")
+}
+
+func initializeProject(force bool, args []string) (string, error) {
 	wd, err := os.Getwd()
 	if err != nil {
 		return "", err
@@ -72,7 +78,7 @@ func initializeProject(args []string) (string, error) {
 		AppName:      path.Base(modName),
 	}
 
-	if err := project.Create(); err != nil {
+	if err := project.Create(force); err != nil {
 		return "", err
 	}
 

@@ -49,7 +49,7 @@ func TestGoldenInitCmd(t *testing.T) {
 
 			viper.Set("useViper", true)
 			viper.Set("license", "apache")
-			projectPath, err := initializeProject(tt.args)
+			projectPath, err := initializeProject(false, tt.args)
 			defer func() {
 				if projectPath != "" {
 					os.RemoveAll(projectPath)

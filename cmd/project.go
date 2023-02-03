@@ -9,32 +9,36 @@ import (
 	"github.com/spf13/cobra-cli/tpl"
 )
 
-// Project contains name, license and paths to projects.
-type Project struct {
-	// v2
-	PkgName      string
-	Copyright    string
-	AbsolutePath string
-	Legal        License
-	Viper        bool
-	AppName      string
-}
-
-type Command struct {
-	CmdName   string
-	CmdParent string
-	*Project
-}
-
-func (p *Project) Create() error {
-	// check if AbsolutePath exists
-	if _, err := os.Stat(p.AbsolutePath); os.IsNotExist(err) {
-		// create directory
-		if err := os.Mkdir(p.AbsolutePath, 0754); err != nil {
-			return err
-		}
+type (
+	// Project contains name, license and paths to projects.
+	Project struct {
+		// v2
+		PkgName      string
+		Copyright    string
+		AbsolutePath string
+		Legal        License
+		Viper        bool
+		AppName      string
 	}
 
+	Command struct {
+		CmdName   string
+		CmdParent string
+		*Project
+	}
+
+	createFileFunc func(p *Project) error
+)
+
+var (
+	projectFiles = map[string]createFileFunc{
+		"%s/main.go":     createMain,
+		"%s/cmd/root.go": createRootCmd,
+		"%s/LICENSE":     createLicenseFile,
+	}
+)
+
+func createMain(p *Project) error {
 	// create main.go
 	mainFile, err := os.Create(fmt.Sprintf("%s/main.go", p.AbsolutePath))
 	if err != nil {
@@ -43,13 +47,12 @@ func (p *Project) Create() error {
 	defer mainFile.Close()
 
 	mainTemplate := template.Must(template.New("main").Parse(string(tpl.MainTemplate())))
-	err = mainTemplate.Execute(mainFile, p)
-	if err != nil {
-		return err
-	}
+	return mainTemplate.Execute(mainFile, p)
+}
 
+func createRootCmd(p *Project) error {
 	// create cmd/root.go
-	if _, err = os.Stat(fmt.Sprintf("%s/cmd", p.AbsolutePath)); os.IsNotExist(err) {
+	if _, err := os.Stat(fmt.Sprintf("%s/cmd", p.AbsolutePath)); os.IsNotExist(err) {
 		cobra.CheckErr(os.Mkdir(fmt.Sprintf("%s/cmd", p.AbsolutePath), 0751))
 	}
 	rootFile, err := os.Create(fmt.Sprintf("%s/cmd/root.go", p.AbsolutePath))
@@ -59,16 +62,10 @@ func (p *Project) Create() error {
 	defer rootFile.Close()
 
 	rootTemplate := template.Must(template.New("root").Parse(string(tpl.RootTemplate())))
-	err = rootTemplate.Execute(rootFile, p)
-	if err != nil {
-		return err
-	}
-
-	// create license
-	return p.createLicenseFile()
+	return rootTemplate.Execute(rootFile, p)
 }
 
-func (p *Project) createLicenseFile() error {
+func createLicenseFile(p *Project) error {
 	data := map[string]interface{}{
 		"copyright": copyrightLine(),
 	}
@@ -82,7 +79,39 @@ func (p *Project) createLicenseFile() error {
 	return licenseTemplate.Execute(licenseFile, data)
 }
 
-func (c *Command) Create() error {
+func (p *Project) Create(force bool) error {
+	// check if AbsolutePath exists
+	if _, err := os.Stat(p.AbsolutePath); os.IsNotExist(err) {
+		// create directory
+		if err := os.Mkdir(p.AbsolutePath, 0754); err != nil {
+			return err
+		}
+	}
+
+	// Check to make sure we don't overwrite things unless we have --force
+	if !force {
+		for path, _ := range projectFiles {
+			abspath := fmt.Sprintf(path, p.AbsolutePath)
+			if _, err := os.Stat(abspath); err == nil {
+				return fmt.Errorf("%s already exists; use --force to overwrite", abspath)
+			}
+		}
+	}
+
+	for _, createFunc := range projectFiles {
+		if err := createFunc(p); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (c *Command) Create(force bool) error {
+	abspath := fmt.Sprintf("%s/cmd/%s.go", c.AbsolutePath, c.CmdName)
+	if _, err := os.Stat(abspath); err == nil && !force {
+		return fmt.Errorf("%s already exists; use --force to overwrite", abspath)
+	}
 	cmdFile, err := os.Create(fmt.Sprintf("%s/cmd/%s.go", c.AbsolutePath, c.CmdName))
 	if err != nil {
 		return err

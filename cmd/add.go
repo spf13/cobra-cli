@@ -43,6 +43,9 @@ Example: cobra add server -> resulting in a new cmd/server.go`,
 				cobra.CheckErr(fmt.Errorf("add needs a name for the command"))
 			}
 
+			force, err := cmd.Flags().GetBool("force")
+			cobra.CheckErr(err)
+
 			wd, err := os.Getwd()
 			cobra.CheckErr(err)
 
@@ -57,7 +60,7 @@ Example: cobra add server -> resulting in a new cmd/server.go`,
 				},
 			}
 
-			cobra.CheckErr(command.Create())
+			cobra.CheckErr(command.Create(force))
 
 			fmt.Printf("%s created at %s\n", command.CmdName, command.AbsolutePath)
 		},
@@ -67,6 +70,7 @@ Example: cobra add server -> resulting in a new cmd/server.go`,
 func init() {
 	addCmd.Flags().StringVarP(&packageName, "package", "t", "", "target package name (e.g. github.com/spf13/hugo)")
 	addCmd.Flags().StringVarP(&parentName, "parent", "p", "rootCmd", "variable name of parent command for this command")
+	addCmd.Flags().BoolP("force", "f", false, "overwrite files")
 	cobra.CheckErr(addCmd.Flags().MarkDeprecated("package", "this operation has been removed."))
 }
 
