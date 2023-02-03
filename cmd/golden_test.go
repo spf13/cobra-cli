@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os/exec"
+	"text/template"
+	"time"
 )
 
 func init() {
@@ -25,29 +27,39 @@ func ensureLF(content []byte) []byte {
 // If contents are equal, it returns nil.
 // If not, it returns which files are not equal
 // and diff (if system has diff command) between these files.
-func compareFiles(pathA, pathB string) error {
-	contentA, err := ioutil.ReadFile(pathA)
+func compareFiles(generatedFile, goldenFile string) error {
+	contentA, err := ioutil.ReadFile(generatedFile)
 	if err != nil {
 		return err
 	}
-	contentB, err := ioutil.ReadFile(pathB)
+	tmpl, err := template.ParseFiles(goldenFile)
 	if err != nil {
 		return err
 	}
+	var buf bytes.Buffer
+	templateData := map[string]string{
+		"Year": fmt.Sprintf("%d", time.Now().Year()),
+	}
+
+	if err := tmpl.Execute(&buf, templateData); err != nil {
+		return err
+	}
+	contentB := buf.Bytes()
+
 	if !bytes.Equal(ensureLF(contentA), ensureLF(contentB)) {
 		output := new(bytes.Buffer)
-		output.WriteString(fmt.Sprintf("%q and %q are not equal!\n\n", pathA, pathB))
+		output.WriteString(fmt.Sprintf("%q and %q are not equal!\n\n", generatedFile, goldenFile))
 
 		diffPath, err := exec.LookPath("diff")
 		if err != nil {
 			// Don't execute diff if it can't be found.
 			return nil
 		}
-		diffCmd := exec.Command(diffPath, "-u", "--strip-trailing-cr", pathA, pathB)
+		diffCmd := exec.Command(diffPath, "-u", "--strip-trailing-cr", generatedFile, goldenFile)
 		diffCmd.Stdout = output
 		diffCmd.Stderr = output
 
-		output.WriteString("$ diff -u " + pathA + " " + pathB + "\n")
+		output.WriteString("$ diff -u " + generatedFile + " " + goldenFile + "\n")
 		if err := diffCmd.Run(); err != nil {
 			output.WriteString("\n" + err.Error())
 		}
