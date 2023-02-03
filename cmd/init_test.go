@@ -10,6 +10,17 @@ import (
 	"github.com/spf13/viper"
 )
 
+type (
+	testArgs struct {
+		name      string
+		args      []string
+		force     bool
+		pkgName   string
+		expectErr bool
+		testFunc  func(*testArgs) error
+	}
+)
+
 func getProject() *Project {
 	wd, _ := os.Getwd()
 	return &Project{
@@ -30,17 +41,77 @@ func TestGoldenInitCmd(t *testing.T) {
 	}
 	defer os.RemoveAll(dir)
 
-	tests := []struct {
-		name      string
-		args      []string
-		pkgName   string
-		expectErr bool
-	}{
+	tests := []testArgs{
 		{
 			name:      "successfully creates a project based on module",
 			args:      []string{"testproject"},
+			force:     false,
 			pkgName:   "github.com/spf13/testproject",
 			expectErr: false,
+			testFunc: func(tt *testArgs) error {
+				projectPath, err := initializeProject(tt.force, tt.args)
+				defer func() {
+					if projectPath != "" {
+						os.RemoveAll(projectPath)
+					}
+				}()
+				if err != nil {
+					return err
+				}
+
+				expectedFiles := []string{"LICENSE", "main.go", "cmd/root.go"}
+				for _, f := range expectedFiles {
+					generatedFile := fmt.Sprintf("%s/%s", projectPath, f)
+					goldenFile := fmt.Sprintf("testdata/%s.golden", filepath.Base(f))
+					err := compareFiles(generatedFile, goldenFile)
+					if err != nil {
+						return err
+					}
+				}
+				return nil
+			},
+		},
+		{
+			name:      "does not overwrite files without force",
+			args:      []string{"testproject"},
+			force:     false,
+			pkgName:   "github.com/spf13/testproject",
+			expectErr: true,
+			testFunc: func(tt *testArgs) error {
+				projectPath, err := initializeProject(tt.force, tt.args)
+				defer func() {
+					if projectPath != "" {
+						os.RemoveAll(projectPath)
+					}
+				}()
+				if err != nil {
+					return err
+				}
+
+				_, err = initializeProject(tt.force, tt.args)
+				return err
+			},
+		},
+		{
+			name:      "does overwrite files with force",
+			args:      []string{"testproject"},
+			force:     true,
+			pkgName:   "github.com/spf13/testproject",
+			expectErr: false,
+			testFunc: func(tt *testArgs) error {
+				projectPath, err := initializeProject(tt.force, tt.args)
+				defer func() {
+					if projectPath != "" {
+						os.RemoveAll(projectPath)
+					}
+				}()
+				if err != nil {
+					return err
+				}
+
+				_, err = initializeProject(tt.force, tt.args)
+				return err
+			},
 		},
 	}
 
@@ -49,12 +120,8 @@ func TestGoldenInitCmd(t *testing.T) {
 
 			viper.Set("useViper", true)
 			viper.Set("license", "apache")
-			projectPath, err := initializeProject(false, tt.args)
-			defer func() {
-				if projectPath != "" {
-					os.RemoveAll(projectPath)
-				}
-			}()
+
+			err := tt.testFunc(&tt)
 
 			if !tt.expectErr && err != nil {
 				t.Fatalf("did not expect an error, got %s", err)
@@ -65,16 +132,6 @@ func TestGoldenInitCmd(t *testing.T) {
 				} else {
 					// got an expected error nothing more to do
 					return
-				}
-			}
-
-			expectedFiles := []string{"LICENSE", "main.go", "cmd/root.go"}
-			for _, f := range expectedFiles {
-				generatedFile := fmt.Sprintf("%s/%s", projectPath, f)
-				goldenFile := fmt.Sprintf("testdata/%s.golden", filepath.Base(f))
-				err := compareFiles(generatedFile, goldenFile)
-				if err != nil {
-					t.Fatal(err)
 				}
 			}
 		})

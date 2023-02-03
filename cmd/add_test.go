@@ -27,6 +27,12 @@ func TestGoldenAddCmd(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	// cobra-init should fail to overwrite existing files without --force
+	assertErr(t, command.Create(false))
+
+	// cobra-init should sucessfully overwrite existing files with --force
+	assertNoErr(t, command.Create(true))
 }
 
 func TestValidateCmdName(t *testing.T) {
