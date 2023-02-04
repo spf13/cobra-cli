@@ -86,7 +86,7 @@ In your project directory (where your main.go file is) you would run the followi
 ```
 cobra-cli add serve
 cobra-cli add config
-cobra-cli add create -p 'configCmd'
+cobra-cli add create -p configCmd
 ```
 
 `cobra-cli add` supports all the same optional flags as `cobra-cli init` does (described above).
