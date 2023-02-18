@@ -56,7 +56,7 @@ cobra-cli init
 go run main.go
 ```
 
-cobra-cli init can also be run from a subdirectory such as how the [cobra generator itself is organized](https://github.com/spf13/cobra).
+cobra-cli init can also be run from a subdirectory such as how the [cobra generator itself is organized](https://github.com/spf13/cobra-cli).
 This is useful if you want to keep your application code separate from your library code.
 
 #### Optional flags:
