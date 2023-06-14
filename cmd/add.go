@@ -37,7 +37,17 @@ If you want your command to be public, pass in the command name
 with an initial uppercase letter.
 
 Example: cobra add server -> resulting in a new cmd/server.go`,
-
+		ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			var comps []string
+			if len(args) == 0 {
+				comps = cobra.AppendActiveHelp(comps, "Please specify the name for the new command")
+			} else if len(args) == 1 {
+				comps = cobra.AppendActiveHelp(comps, "This command does not take any more arguments (but may accept flags)")
+			} else {
+				comps = cobra.AppendActiveHelp(comps, "ERROR: Too many arguments specified")
+			}
+			return comps, cobra.ShellCompDirectiveNoFileComp
+		},
 		Run: func(cmd *cobra.Command, args []string) {
 			if len(args) < 1 {
 				cobra.CheckErr(fmt.Errorf("add needs a name for the command"))
