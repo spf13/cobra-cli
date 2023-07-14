@@ -13,6 +13,13 @@
 
 package tpl
 
+import (
+	"errors"
+	"fmt"
+	"io/fs"
+	"os"
+)
+
 func MainTemplate() []byte {
 	return []byte(`/*
 {{ .Copyright }}
@@ -118,8 +125,7 @@ func initConfig() {
 `)
 }
 
-func AddCommandTemplate() []byte {
-	return []byte(`/*
+var defaultCommandTemplate = []byte(`/*
 {{ .Project.Copyright }}
 {{ if .Legal.Header }}{{ .Legal.Header }}{{ end }}
 */
@@ -160,4 +166,29 @@ func init() {
 	// {{ .CmdName }}Cmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 `)
+
+func AddCommandTemplate() []byte {
+	wd, err := os.Getwd()
+	if err != nil {
+		fmt.Println("Could not get current working directory.", "Error:", err)
+		return defaultCommandTemplate
+	}
+
+	filename := ".cobra_template.tpl"
+
+	tpl, err := os.ReadFile(fmt.Sprintf("%s/%s", wd, filename))
+	if err != nil {
+		if errors.Is(err, fs.ErrNotExist) {
+			return defaultCommandTemplate
+		}
+		fmt.Println("Could not read .cobra_template.tpl", "Error:", err)
+		return defaultCommandTemplate
+	}
+
+	if len(tpl) < 1 {
+		fmt.Println("Template file is empty. Using default template.")
+		return defaultCommandTemplate
+	}
+
+	return tpl
 }
