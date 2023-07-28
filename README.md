@@ -120,7 +120,7 @@ with `go run main.go help serve`, etc. would all work.
 
 You now have a basic Cobra-based application up and running. Next step is to edit the files in cmd and customize them for your application.
 
-For complete details on using the Cobra library, please read the [The Cobra User Guide](https://github.com/spf13/cobra/blob/master/user_guide.md#using-the-cobra-library).
+For complete details on using the Cobra library, please read the [The Cobra User Guide](https://github.com/spf13/cobra/blob/main/site/content/user_guide.md#using-the-cobra-library).
 
 Have fun!
 
