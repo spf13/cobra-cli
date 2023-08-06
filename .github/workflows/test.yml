@@ -56,12 +56,9 @@ jobs:
 
     - run: |
         export GOBIN=$HOME/go/bin
-        case "${{ matrix.go }}" in
-          16|17) _version='@latest';;
-          *) _version='';;
-        esac
-        go install github.com/kyoh86/richgo"${_version}"
-        go install github.com/mitchellh/gox"${_version}"
+
+        go install github.com/kyoh86/richgo@latest
+        go install github.com/mitchellh/gox@latest
 
     - run: PATH=$HOME/go/bin/:$PATH make test build
 
