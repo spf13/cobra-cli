@@ -31,7 +31,7 @@ var (
 		Use:     "init [path]",
 		Aliases: []string{"initialize", "initialise", "create"},
 		Short:   "Initialize a Cobra Application",
-		Long: `Initialize (cobra init) will create a new application, with a license
+		Long: `Initialize (cobra-cli init) will create a new application, with a license
 and the appropriate structure for a Cobra-based CLI application.
 
 Cobra init must be run inside of a go module (please run "go mod init <MODNAME>" first)

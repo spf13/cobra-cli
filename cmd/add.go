@@ -29,14 +29,14 @@ var (
 		Use:     "add [command name]",
 		Aliases: []string{"command"},
 		Short:   "Add a command to a Cobra Application",
-		Long: `Add (cobra add) will create a new command, with a license and
+		Long: `Add (cobra-cli add) will create a new command, with a license and
 the appropriate structure for a Cobra-based CLI application,
 and register it to its parent (default rootCmd).
 
 If you want your command to be public, pass in the command name
 with an initial uppercase letter.
 
-Example: cobra add server -> resulting in a new cmd/server.go`,
+Example: cobra-cli add server -> resulting in a new cmd/server.go`,
 		ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 			var comps []string
 			if len(args) == 0 {
