@@ -177,3 +177,13 @@ Copyright © 2020 Steve Francia <spf@spf13.com>
 This file is part of CLI application foo.
 */
 ```
+
+### Custom "add" Templates
+
+In some cases advanced Cobra users may have extended their implementations of
+their command line application past the defaults. In these cases, the default
+`cobra-cli add` template may no longer apply to their repository. Support has
+been added to create custom template files for new commands on a per-project
+basis by adding a `.cobra_template.tpl` file to the root directory of their
+command line application. An example template can be found in the
+[cmd/add_test.go](https://www.github.com/spf13/cobra-cli/blob/main/cmd/add_test.go) file.
