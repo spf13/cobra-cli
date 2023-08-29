@@ -15,9 +15,10 @@ type Project struct {
 	PkgName      string
 	Copyright    string
 	AbsolutePath string
+	AppName      string
 	Legal        License
 	Viper        bool
-	AppName      string
+	SkipLicence  bool
 }
 
 type Command struct {
@@ -69,6 +70,10 @@ func (p *Project) Create() error {
 }
 
 func (p *Project) createLicenseFile() error {
+	if p.SkipLicence {
+		return nil
+	}
+
 	data := map[string]interface{}{
 		"copyright": copyrightLine(),
 	}
