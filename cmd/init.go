@@ -135,7 +135,11 @@ func goGet(mod string) error {
 
 func modInfoJSON(args ...string) []byte {
 	cmdArgs := append([]string{"list", "-json"}, args...)
-	out, err := exec.Command("go", cmdArgs...).Output()
+
+	cmd := exec.Command("go", cmdArgs...)
+	cmd.Env = append(cmd.Env, "GOWORK=off")
+
+	out, err := cmd.Output()
 	cobra.CheckErr(err)
 
 	return out
