@@ -72,7 +72,17 @@ func (p *Project) createLicenseFile() error {
 	data := map[string]interface{}{
 		"copyright": copyrightLine(),
 	}
-	licenseFile, err := os.Create(fmt.Sprintf("%s/LICENSE", p.AbsolutePath))
+
+	licensePath := p.AbsolutePath + "/LICENSE"
+
+	if p.Legal.Name == "None" {
+		// If user didn't set any license and an existing license file is found, use that.
+		if _, err := os.Stat(licensePath); err == nil {
+			return nil
+		}
+	}
+
+	licenseFile, err := os.Create(licensePath)
 	if err != nil {
 		return err
 	}
