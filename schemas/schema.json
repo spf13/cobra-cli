@@ -9,6 +9,7 @@
       "description": "An author of the project",
       "type": "string",
       "minLength": 1,
+      "pattern": "\\S",
       "examples": ["Steve Francia <spf@spf13.com>"]
     },
     "license": {
@@ -17,6 +18,8 @@
       "oneOf": [
         {
           "type": "string",
+          "minLength": 1,
+          "pattern": "\\S",
           "examples": [
             "GPLv2",
             "GPLv3",
@@ -35,6 +38,7 @@
               "description": "A header of the license",
               "type": "string",
               "minLength": 1,
+              "pattern": "\\S",
               "examples": ["This file is part of CLI application foo."]
             },
             "text": {
@@ -42,6 +46,7 @@
               "description": "A text of the license\nVariables:\n- copyright",
               "type": "string",
               "minLength": 1,
+              "pattern": "\\S",
               "examples": [
                 "{{ .copyright }}\n\nThis is my license. There are many like it, but this one is mine.\nMy license is my best friend. It is my life. I must master it as I must\nmaster my life.\n"
               ]
