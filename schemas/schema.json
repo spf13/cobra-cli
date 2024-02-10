@@ -6,7 +6,7 @@
   "properties": {
     "author": {
       "title": "author",
-      "description": "An author of the project",
+      "description": "An author of the project\nhttps://github.com/spf13/cobra-cli",
       "type": "string",
       "minLength": 1,
       "pattern": "\\S",
@@ -14,7 +14,7 @@
     },
     "license": {
       "title": "license",
-      "description": "A license of the project",
+      "description": "A license of the project\nhttps://github.com/spf13/cobra-cli",
       "oneOf": [
         {
           "type": "string",
@@ -35,7 +35,7 @@
           "properties": {
             "header": {
               "title": "header",
-              "description": "A header of the license",
+              "description": "A header of the license\nhttps://github.com/spf13/cobra-cli",
               "type": "string",
               "minLength": 1,
               "pattern": "\\S",
@@ -43,7 +43,7 @@
             },
             "text": {
               "title": "text",
-              "description": "A text of the license\nVariables:\n- copyright",
+              "description": "A text of the license\nVariables:\n- copyright\nhttps://github.com/spf13/cobra-cli",
               "type": "string",
               "minLength": 1,
               "pattern": "\\S",
@@ -58,7 +58,7 @@
     },
     "useViper": {
       "title": "use Viper",
-      "description": "Whether to use Viper for managing project configuration",
+      "description": "Whether to use Viper (https://github.com/spf13/viper) for managing project configuration\nhttps://github.com/spf13/cobra-cli",
       "type": "boolean"
     }
   },
