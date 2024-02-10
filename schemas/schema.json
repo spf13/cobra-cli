@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Cobra CLI settings",
+  "description": "Cobra CLI settings",
+  "type": "object",
+  "properties": {
+    "author": {
+      "title": "author",
+      "description": "An author of the project",
+      "type": "string",
+      "minLength": 1,
+      "examples": ["Steve Francia <spf@spf13.com>"]
+    },
+    "license": {
+      "title": "license",
+      "description": "A license of the project",
+      "oneOf": [
+        {
+          "type": "string",
+          "examples": [
+            "GPLv2",
+            "GPLv3",
+            "LGPL",
+            "AGPL",
+            "MIT",
+            "2-Clause BSD",
+            "3-Clause BSD"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "header": {
+              "title": "header",
+              "description": "A header of the license",
+              "type": "string",
+              "minLength": 1,
+              "examples": ["This file is part of CLI application foo."]
+            },
+            "text": {
+              "title": "text",
+              "description": "A text of the license\nVariables:\n- copyright",
+              "type": "string",
+              "minLength": 1,
+              "examples": [
+                "{{ .copyright }}\n\nThis is my license. There are many like it, but this one is mine.\nMy license is my best friend. It is my life. I must master it as I must\nmaster my life.\n"
+              ]
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "useViper": {
+      "title": "use Viper",
+      "description": "Whether to use Viper for managing project configuration",
+      "type": "boolean"
+    }
+  },
+  "additionalProperties": false
+}
