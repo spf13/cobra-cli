@@ -29,15 +29,25 @@ var (
 		Use:     "add [command name]",
 		Aliases: []string{"command"},
 		Short:   "Add a command to a Cobra Application",
-		Long: `Add (cobra add) will create a new command, with a license and
+		Long: `Add (cobra-cli add) will create a new command, with a license and
 the appropriate structure for a Cobra-based CLI application,
 and register it to its parent (default rootCmd).
 
 If you want your command to be public, pass in the command name
 with an initial uppercase letter.
 
-Example: cobra add server -> resulting in a new cmd/server.go`,
-
+Example: cobra-cli add server -> resulting in a new cmd/server.go`,
+		ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			var comps []string
+			if len(args) == 0 {
+				comps = cobra.AppendActiveHelp(comps, "Please specify the name for the new command")
+			} else if len(args) == 1 {
+				comps = cobra.AppendActiveHelp(comps, "This command does not take any more arguments (but may accept flags)")
+			} else {
+				comps = cobra.AppendActiveHelp(comps, "ERROR: Too many arguments specified")
+			}
+			return comps, cobra.ShellCompDirectiveNoFileComp
+		},
 		Run: func(cmd *cobra.Command, args []string) {
 			if len(args) < 1 {
 				cobra.CheckErr(fmt.Errorf("add needs a name for the command"))
