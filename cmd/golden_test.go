@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"time"
 )
 
 func init() {
@@ -25,29 +26,33 @@ func ensureLF(content []byte) []byte {
 // If contents are equal, it returns nil.
 // If not, it returns which files are not equal
 // and diff (if system has diff command) between these files.
-func compareFiles(pathA, pathB string) error {
-	contentA, err := os.ReadFile(pathA)
+func compareFiles(generated, golden string) error {
+	contentA, err := os.ReadFile(generated)
 	if err != nil {
 		return err
 	}
-	contentB, err := os.ReadFile(pathB)
+	contentB, err := os.ReadFile(golden)
 	if err != nil {
 		return err
 	}
+
+	// change year to current year
+	contentB = bytes.ReplaceAll(contentB, []byte("2022"), []byte(time.Now().Format("2006")))
+
 	if !bytes.Equal(ensureLF(contentA), ensureLF(contentB)) {
 		output := new(bytes.Buffer)
-		output.WriteString(fmt.Sprintf("%q and %q are not equal!\n\n", pathA, pathB))
+		output.WriteString(fmt.Sprintf("%q and %q are not equal!\n\n", generated, golden))
 
 		diffPath, err := exec.LookPath("diff")
 		if err != nil {
 			// Don't execute diff if it can't be found.
 			return nil
 		}
-		diffCmd := exec.Command(diffPath, "-u", "--strip-trailing-cr", pathA, pathB)
+		diffCmd := exec.Command(diffPath, "-u", "--strip-trailing-cr", generated, golden)
 		diffCmd.Stdout = output
 		diffCmd.Stderr = output
 
-		output.WriteString("$ diff -u " + pathA + " " + pathB + "\n")
+		output.WriteString("$ diff -u " + generated + " " + golden + "\n")
 		if err := diffCmd.Run(); err != nil {
 			output.WriteString("\n" + err.Error())
 		}
