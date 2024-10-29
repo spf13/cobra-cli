@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -23,11 +22,7 @@ func getProject() *Project {
 }
 
 func TestGoldenInitCmd(t *testing.T) {
-
-	dir, err := ioutil.TempDir("", "cobra-init")
-	if err != nil {
-		t.Fatal(err)
-	}
+	dir := filepath.Join(os.TempDir(), "cobra-init")
 	defer os.RemoveAll(dir)
 
 	tests := []struct {
@@ -46,7 +41,6 @@ func TestGoldenInitCmd(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-
 			viper.Set("useViper", true)
 			viper.Set("license", "apache")
 			projectPath, err := initializeProject(tt.args)

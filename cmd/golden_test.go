@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"os/exec"
 )
 
@@ -26,11 +26,11 @@ func ensureLF(content []byte) []byte {
 // If not, it returns which files are not equal
 // and diff (if system has diff command) between these files.
 func compareFiles(pathA, pathB string) error {
-	contentA, err := ioutil.ReadFile(pathA)
+	contentA, err := os.ReadFile(pathA)
 	if err != nil {
 		return err
 	}
-	contentB, err := ioutil.ReadFile(pathB)
+	contentB, err := os.ReadFile(pathB)
 	if err != nil {
 		return err
 	}

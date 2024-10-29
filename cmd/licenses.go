@@ -16,7 +16,7 @@
 package cmd
 
 import (
-	"fmt"
+	"errors"
 	"strings"
 	"time"
 
@@ -64,8 +64,10 @@ func getLicense() License {
 
 	// If user wants to have custom license, use that.
 	if viper.IsSet("license.header") || viper.IsSet("license.text") {
-		return License{Header: viper.GetString("license.header"),
-			Text: viper.GetString("license.text")}
+		return License{
+			Header: viper.GetString("license.header"),
+			Text:   viper.GetString("license.text"),
+		}
 	}
 
 	// If user wants to have built-in license, use that.
@@ -94,7 +96,7 @@ func copyrightLine() string {
 func findLicense(name string) License {
 	found := matchLicense(name)
 	if found == "" {
-		cobra.CheckErr(fmt.Errorf("unknown license: " + name))
+		cobra.CheckErr(errors.New("unknown license: " + name))
 	}
 	return Licenses[found]
 }
