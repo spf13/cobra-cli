@@ -36,7 +36,7 @@ func init() {
 		// possible.
 
 		goExecutable := os.Getenv("COBRA_GO_EXECUTABLE")
-		if len(goExecutable) <= 0 {
+		if len(goExecutable) == 0 {
 			goExecutable = "go"
 		}
 

@@ -21,7 +21,7 @@ It can also apply the license you specify to your application.
 With the introduction of Go modules, the Cobra generator has been simplified to
 take advantage of modules. The Cobra generator works from within a Go module. 
 
-#### Initalizing a module
+#### Initializing a module
 
 __If you already have a module, skip this step.__
 
@@ -39,7 +39,7 @@ cd myapp
 go mod init github.com/spf13/myapp
 ```
 
-#### Initalizing a Cobra CLI application
+#### Initializing a Cobra CLI application
 
 From within a Go module run `cobra-cli init`. This will create a new barebones project
 for you to edit. 
@@ -95,13 +95,13 @@ You'll notice that this final command has a `-p` flag. This is used to assign a
 parent command to the newly added command. In this case, we want to assign the
 "create" command to the "config" command. All commands have a default parent of rootCmd if not specified.  
 
-By default `cobra-cli` will append `Cmd` to the name provided and uses this name for the internal variable name. When specifying a parent, be sure to match the variable name used in the code. 
+By default `cobra-cli` will append `Cmd` to the name provided and use this name for the internal variable name. When specifying a parent, be sure to match the variable name used in the code. 
 
 *Note: Use camelCase (not snake_case/kebab-case) for command names.
 Otherwise, you will encounter errors.
 For example, `cobra-cli add add-user` is incorrect, but `cobra-cli add addUser` is valid.*
 
-Once you have run these three commands you would have an app structure similar to
+Once you have run these three commands you will have an app structure similar to
 the following:
 
 ```
