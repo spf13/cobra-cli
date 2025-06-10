@@ -26,6 +26,7 @@ var (
 	// Used for flags.
 	cfgFile     string
 	userLicense string
+	localVars   bool
 
 	rootCmd = &cobra.Command{
 		Use:   "cobra-cli",
@@ -48,6 +49,7 @@ func init() {
 	rootCmd.PersistentFlags().StringP("author", "a", "YOUR NAME", "author name for copyright attribution")
 	rootCmd.PersistentFlags().StringVarP(&userLicense, "license", "l", "", "name of license for the project")
 	rootCmd.PersistentFlags().Bool("viper", false, "use Viper for configuration")
+	rootCmd.PersistentFlags().BoolVarP(&localVars, "local", "L", false, "project uses local-scoped variables")
 	cobra.CheckErr(viper.BindPFlag("author", rootCmd.PersistentFlags().Lookup("author")))
 	cobra.CheckErr(viper.BindPFlag("useViper", rootCmd.PersistentFlags().Lookup("viper")))
 	viper.SetDefault("author", "NAME HERE <EMAIL ADDRESS>")

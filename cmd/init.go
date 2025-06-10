@@ -69,13 +69,14 @@ func initializeProject(args []string) (string, error) {
 		return "", err
 	}
 
+	modName := getModImportPath()
+
 	if len(args) > 0 {
 		if args[0] != "." {
 			wd = fmt.Sprintf("%s/%s", wd, args[0])
+			modName = fmt.Sprintf("%s/%s", modName, args[0])
 		}
 	}
-
-	modName := getModImportPath()
 
 	project := &Project{
 		AbsolutePath: wd,
@@ -84,6 +85,7 @@ func initializeProject(args []string) (string, error) {
 		Copyright:    copyrightLine(),
 		Viper:        viper.GetBool("useViper"),
 		AppName:      path.Base(modName),
+		LocalVars:    localVars,
 	}
 
 	if err := project.Create(); err != nil {

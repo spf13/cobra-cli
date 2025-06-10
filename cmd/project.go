@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strings"
 	"text/template"
 
 	"github.com/spf13/cobra"
@@ -18,6 +19,7 @@ type Project struct {
 	Legal        License
 	Viper        bool
 	AppName      string
+	LocalVars    bool
 }
 
 type Command struct {
@@ -30,7 +32,7 @@ func (p *Project) Create() error {
 	// check if AbsolutePath exists
 	if _, err := os.Stat(p.AbsolutePath); os.IsNotExist(err) {
 		// create directory
-		if err := os.Mkdir(p.AbsolutePath, 0754); err != nil {
+		if err := os.MkdirAll(p.AbsolutePath, 0754); err != nil {
 			return err
 		}
 	}
@@ -50,7 +52,7 @@ func (p *Project) Create() error {
 
 	// create cmd/root.go
 	if _, err = os.Stat(fmt.Sprintf("%s/cmd", p.AbsolutePath)); os.IsNotExist(err) {
-		cobra.CheckErr(os.Mkdir(fmt.Sprintf("%s/cmd", p.AbsolutePath), 0751))
+		cobra.CheckErr(os.MkdirAll(fmt.Sprintf("%s/cmd", p.AbsolutePath), 0751))
 	}
 	rootFile, err := os.Create(fmt.Sprintf("%s/cmd/root.go", p.AbsolutePath))
 	if err != nil {
@@ -58,7 +60,11 @@ func (p *Project) Create() error {
 	}
 	defer rootFile.Close()
 
-	rootTemplate := template.Must(template.New("root").Parse(string(tpl.RootTemplate())))
+	tmpl := tpl.RootTemplateGlobal()
+	if p.LocalVars {
+		tmpl = tpl.RootTemplateLocal()
+	}
+	rootTemplate := template.Must(template.New("root").Parse(string(tmpl)))
 	err = rootTemplate.Execute(rootFile, p)
 	if err != nil {
 		return err
@@ -83,13 +89,34 @@ func (p *Project) createLicenseFile() error {
 }
 
 func (c *Command) Create() error {
-	cmdFile, err := os.Create(fmt.Sprintf("%s/cmd/%s.go", c.AbsolutePath, c.CmdName))
+	filename := c.CmdName
+	if c.CmdParent != "rootCmd" {
+		filename = fmt.Sprintf("%s_%s", strings.TrimSuffix(c.CmdParent, "Cmd"), c.CmdName)
+	}
+	cmdFile, err := os.Create(fmt.Sprintf("%s/cmd/%s.go", c.AbsolutePath, filename))
 	if err != nil {
 		return err
 	}
 	defer cmdFile.Close()
 
-	commandTemplate := template.Must(template.New("sub").Parse(string(tpl.AddCommandTemplate())))
+	funcMap := template.FuncMap{
+		// The name "title" is what the function will be called in the template text.
+		"typeName": func(cmd string, parent string) string {
+			name := strings.Title(cmd)
+			if parent != "rootCmd" {
+				name = strings.Title(strings.TrimSuffix(parent, "Cmd")) + name
+			}
+			name += "Cmd"
+			return name
+		},
+		"title": strings.Title,
+	}
+
+	tmpl := tpl.AddCommandTemplateGlobal()
+	if c.LocalVars {
+		tmpl = tpl.AddCommandTemplateLocal()
+	}
+	commandTemplate := template.Must(template.New("sub").Funcs(funcMap).Parse(string(tmpl)))
 	err = commandTemplate.Execute(cmdFile, c)
 	if err != nil {
 		return err
