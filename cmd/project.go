@@ -1,8 +1,10 @@
 package cmd
 
 import (
+	"bufio"
 	"fmt"
 	"os"
+	"strings"
 	"text/template"
 
 	"github.com/spf13/cobra"
@@ -36,7 +38,15 @@ func (p *Project) Create() error {
 	}
 
 	// create main.go
-	mainFile, err := os.Create(fmt.Sprintf("%s/main.go", p.AbsolutePath))
+	mainPath := fmt.Sprintf("%s/main.go", p.AbsolutePath)
+	ok, err := confirmMainOverwrite(mainPath)
+	if err != nil {
+		return err
+	}
+	if !ok {
+		return fmt.Errorf("aborted: %s already exists", mainPath)
+	}
+	mainFile, err := os.Create(mainPath)
 	if err != nil {
 		return err
 	}
@@ -66,6 +76,24 @@ func (p *Project) Create() error {
 
 	// create license
 	return p.createLicenseFile()
+}
+
+func confirmMainOverwrite(path string) (bool, error) {
+	if _, err := os.Stat(path); err != nil {
+		if os.IsNotExist(err) {
+			return true, nil
+		}
+		return false, err
+	}
+
+	fmt.Printf("%s already exists. Overwrite? [y/N]: ", path)
+	reader := bufio.NewReader(os.Stdin)
+	response, err := reader.ReadString('\n')
+	if err != nil {
+		return false, err
+	}
+	response = strings.TrimSpace(strings.ToLower(response))
+	return response == "y" || response == "yes", nil
 }
 
 func (p *Project) createLicenseFile() error {
