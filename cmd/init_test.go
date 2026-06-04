@@ -16,8 +16,8 @@ func getProject() *Project {
 		AbsolutePath: fmt.Sprintf("%s/testproject", wd),
 		Legal:        getLicense(),
 		Copyright:    copyrightLine(),
-		AppName:      "cmd",
-		PkgName:      "github.com/spf13/cobra-cli/cmd/cmd",
+		AppName:      "testproject",
+		PkgName:      "github.com/spf13/cobra-cli/cmd/testproject",
 		Viper:        true,
 	}
 }
@@ -39,7 +39,7 @@ func TestGoldenInitCmd(t *testing.T) {
 		{
 			name:      "successfully creates a project based on module",
 			args:      []string{"testproject"},
-			pkgName:   "github.com/spf13/testproject",
+			pkgName:   "github.com/spf13/cobra-cli/cmd/testproject",
 			expectErr: false,
 		},
 	}
@@ -49,6 +49,7 @@ func TestGoldenInitCmd(t *testing.T) {
 
 			viper.Set("useViper", true)
 			viper.Set("license", "apache")
+			viper.Set("year", "2022")
 			projectPath, err := initializeProject(tt.args)
 			defer func() {
 				if projectPath != "" {

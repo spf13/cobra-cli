@@ -69,13 +69,15 @@ func initializeProject(args []string) (string, error) {
 		return "", err
 	}
 
+	var subPath string
 	if len(args) > 0 {
 		if args[0] != "." {
 			wd = fmt.Sprintf("%s/%s", wd, args[0])
+			subPath = args[0]
 		}
 	}
 
-	modName := getModImportPath()
+	modName := getModImportPath(subPath)
 
 	project := &Project{
 		AbsolutePath: wd,
@@ -93,9 +95,9 @@ func initializeProject(args []string) (string, error) {
 	return project.AbsolutePath, nil
 }
 
-func getModImportPath() string {
+func getModImportPath(subPath string) string {
 	mod, cd := parseModInfo()
-	return path.Join(mod.Path, fileToURL(strings.TrimPrefix(cd.Dir, mod.Dir)))
+	return path.Join(mod.Path, fileToURL(strings.TrimPrefix(cd.Dir, mod.Dir)), fileToURL(subPath))
 }
 
 func fileToURL(in string) string {
